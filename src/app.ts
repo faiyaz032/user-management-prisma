@@ -1,4 +1,6 @@
 //dependencies
+require('dotenv');
+import cors from 'cors';
 import express, { Application } from 'express';
 import morgan from 'morgan';
 import globalErrorMiddleware from './middlewares/globalErrorMiddleware';
@@ -8,6 +10,7 @@ import notFoundMiddleware from './middlewares/notFoundHandler';
 const app: Application = express();
 
 //middlewares
+app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
