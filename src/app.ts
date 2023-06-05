@@ -5,6 +5,7 @@ import express, { Application } from 'express';
 import morgan from 'morgan';
 import globalErrorMiddleware from './middlewares/globalErrorMiddleware';
 import notFoundMiddleware from './middlewares/notFoundHandler';
+import userRouter from './routes/user.routes';
 
 //initialize the app
 const app: Application = express();
@@ -13,6 +14,8 @@ const app: Application = express();
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+
+app.use('/api/user', userRouter);
 
 app.all('*', notFoundMiddleware);
 app.use(globalErrorMiddleware);
