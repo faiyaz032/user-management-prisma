@@ -89,6 +89,57 @@ class UserService {
       throw new AppError(500, error.message);
     }
   };
+
+  /**
+   * This service function updates a user in database
+   */
+  updateUser = async (userId: number, userData: IUser) => {
+    try {
+      const userExists = (await this.getUserById(userId)) as IUser;
+      if (!userExists) {
+        throw new AppError(404, 'No User exists with the id');
+      }
+
+      const updatedUser = await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          name: userData.name ?? userExists.name,
+          email: userData.email ?? userExists.email,
+        },
+        select: {
+          name: true,
+          email: true,
+        },
+      });
+
+      return updatedUser;
+    } catch (error: any) {
+      console.log(error);
+      throw new AppError(error.status, error.message);
+    }
+  };
+
+  /**
+   * This service function deletes users from database
+   */
+
+  deleteUser = async (userId: number) => {
+    try {
+      const userExists = await this.getUserById(userId);
+      if (!userExists) {
+        throw new AppError(404, 'No User Found with this id to delete');
+      }
+      return await this.prisma.user.delete({
+        where: {
+          id: userId,
+        },
+      });
+    } catch (error: any) {
+      throw new AppError(500, error.message);
+    }
+  };
 }
 
 export default UserService;

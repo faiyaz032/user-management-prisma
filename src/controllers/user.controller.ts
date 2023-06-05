@@ -56,7 +56,6 @@ class UserController {
   /**
    * This request handler function handles get user by id
    */
-
   getUserByIdHandler: RequestHandler = async (req, res, next) => {
     const { id } = req.params;
     if (!id) {
@@ -75,6 +74,58 @@ class UserController {
     } catch (error: any) {
       console.log(error);
       next(new AppError(error.code, error.message));
+    }
+  };
+
+  /**
+   * This request handler function handles updating user
+   */
+
+  updateUserHandler: RequestHandler = async (req, res, next) => {
+    const { id: userId } = req.params;
+    const { name, email } = req.body;
+
+    if (!userId) {
+      return next(new AppError(400, 'Please attach user id in the param'));
+    }
+
+    if (!name || !email) {
+      return next(new AppError(400, 'Please attach name,email id in the body'));
+    }
+
+    try {
+      const updatedUser = await this.service.updateUser(Number(userId), req.body);
+      console.log(
+        '🚀 ~ file: user.controller.ts:98 ~ UserController ~ updateUser:RequestHandler= ~ updatedUser:',
+        updatedUser
+      );
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'User Updated succesfully',
+        updatedUser,
+      });
+    } catch (error: any) {
+      next(new AppError(error.status, error.message));
+    }
+  };
+
+  /**
+   * This request handler function handles deleting user
+   */
+  deleteUserHandler: RequestHandler = async (req, res, next) => {
+    const { id: userId } = req.params;
+    if (!userId) {
+      return next(new AppError(400, 'Please attach the id with url param'));
+    }
+    try {
+      await this.service.deleteUser(Number(userId));
+      return res.status(200).json({
+        status: 'success',
+        message: 'user deleted successfully',
+      });
+    } catch (error: any) {
+      next(new AppError(500, error.message));
     }
   };
 }
