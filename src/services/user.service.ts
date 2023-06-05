@@ -38,12 +38,55 @@ class UserService {
 
       //return user
       return user;
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           throw new AppError(400, 'Email already exists');
         }
       }
+      throw new AppError(500, error.message);
+    }
+  };
+
+  /**
+   * This user service fetches all users from database
+   */
+  getAllUsers = async () => {
+    try {
+      const users = await this.prisma.user.findMany({
+        select: {
+          name: true,
+          email: true,
+          role: true,
+        },
+      });
+      return users;
+    } catch (error: any) {
+      console.log(error);
+      throw new AppError(500, error.message);
+    }
+  };
+
+  /**
+   * This user service fetches a user by id from database
+   * @param  {number} id
+   * @returns
+   */
+  getUserById = async (id: number) => {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          id: id,
+        },
+        select: {
+          name: true,
+          email: true,
+          role: true,
+        },
+      });
+      return user;
+    } catch (error: any) {
+      throw new AppError(500, error.message);
     }
   };
 }
