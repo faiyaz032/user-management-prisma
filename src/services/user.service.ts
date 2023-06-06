@@ -13,7 +13,6 @@ class UserService {
 
   /**
    * This service will create user record in database
-   * @param {IUser} userData
    */
   createUser = async (userData: IUser) => {
     try {
@@ -22,7 +21,7 @@ class UserService {
       const hashedPassword = await bcrypt.hash(userData.password, salt);
 
       //create user on database
-      const user = await this.prisma.users.create({
+      const user = await this.prisma.user.create({
         data: {
           name: userData.name,
           email: userData.email,
@@ -77,7 +76,7 @@ class UserService {
    */
   getAllUsers = async () => {
     try {
-      const users = await this.prisma.users.findMany({
+      const users = await this.prisma.user.findMany({
         select: {
           id: true,
           name: true,
@@ -99,7 +98,7 @@ class UserService {
    */
   getUserById = async (id: number) => {
     try {
-      const user = await this.prisma.users.findFirst({
+      const user = await this.prisma.user.findFirst({
         where: {
           id: id,
         },
@@ -121,7 +120,7 @@ class UserService {
    */
   private getUserByEmail = async (email: string) => {
     try {
-      const user = await this.prisma.users.findFirst({
+      const user = await this.prisma.user.findFirst({
         where: {
           email,
         },
@@ -149,7 +148,7 @@ class UserService {
         throw new AppError(404, 'No User exists with the id');
       }
 
-      const updatedUser = await this.prisma.users.update({
+      const updatedUser = await this.prisma.user.update({
         where: {
           id: userId,
         },
@@ -181,7 +180,7 @@ class UserService {
       if (!userExists) {
         throw new AppError(404, 'No User Found with this id to delete');
       }
-      return await this.prisma.users.delete({
+      return await this.prisma.user.delete({
         where: {
           id: userId,
         },
