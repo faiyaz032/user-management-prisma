@@ -107,8 +107,15 @@ class UserService {
           name: true,
           email: true,
           role: true,
+          verificationCode: true,
+          verified: true,
+          passwordResetCode: true,
+          password: true,
         },
       });
+      if (!user) {
+        throw new AppError(404, 'No user found with given id');
+      }
       return user;
     } catch (error: any) {
       throw new AppError(500, error.message);
@@ -155,6 +162,7 @@ class UserService {
         data: {
           name: userData.name ?? userExists.name,
           email: userData.email ?? userExists.email,
+          verified: userData.verified ?? userExists.verified,
         },
         select: {
           id: true,
@@ -186,6 +194,33 @@ class UserService {
         },
       });
     } catch (error: any) {
+      throw new AppError(500, error.message);
+    }
+  };
+
+  getVerificationCode = async (userId: number) => {
+    try {
+      const user = (await this.getUserById(userId)) as IUser;
+      if (!user) {
+        throw new AppError(500, 'No user found for verification');
+      }
+      return user.verificationCode;
+    } catch (error: any) {
+      throw new AppError(500, 'Error getting user verificationCode');
+    }
+  };
+
+  verifyUser = async (userId: number, verificationCode: string) => {
+    try {
+      const user = (await this.getUserById(userId)) as IUser;
+      if (user.verificationCode !== verificationCode) {
+        throw new AppError(400, 'invalid verification code');
+      }
+      //make the user verified
+      const updatedUser = await this.updateUser(userId, { ...user, verified: true });
+      return updatedUser;
+    } catch (error: any) {
+      console.log(error);
       throw new AppError(500, error.message);
     }
   };

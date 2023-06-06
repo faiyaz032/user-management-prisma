@@ -150,6 +150,53 @@ class UserController {
       next(new AppError(500, error.message));
     }
   };
+
+  /**
+   * This request handler function handles sending verification code to the client
+   */
+  verificationCodeHandler: RequestHandler = async (req, res, next) => {
+    const { id } = req.params;
+    if (!id) return next(new AppError(400, 'Please attach user id in the param'));
+    try {
+      const verificationCode = await this.service.getVerificationCode(Number(id));
+      return res.status(200).json({
+        status: 'success',
+        message: 'verification code fetched successfully',
+        verificationCode,
+      });
+    } catch (error: any) {
+      next(new AppError(error.statusCode, error.message));
+    }
+  };
+
+  /**
+   * This request handler function verify the user
+   */
+  verifyUserHandler: RequestHandler = async (req, res, next) => {
+    const { id: userId } = req.params;
+    const { verificationCode } = req.body;
+
+    if (!userId || !verificationCode) {
+      return next(
+        new AppError(400, 'Please attach userid in the param and verification code in the body')
+      );
+    }
+
+    try {
+      const user = await this.service.verifyUser(Number(userId), verificationCode);
+      console.log(
+        '🚀 ~ file: user.controller.ts:187 ~ UserController ~ verifyUserHandler:RequestHandler= ~ user:',
+        user
+      );
+      return res.status(200).json({
+        status: 'success',
+        message: 'user verified successfully',
+        user,
+      });
+    } catch (error: any) {
+      next(new AppError(error.statusCode, error.message));
+    }
+  };
 }
 
 export default UserController;

@@ -13,6 +13,7 @@ const userService = new UserService();
  */
 const authorize: RequestHandler = async (req, res, next) => {
   const { role: requestedRole } = req.session.user as IUser;
+
   try {
     const correspondingUser = (await userService.getUserById(Number(req.params.id))) as IUser;
 
