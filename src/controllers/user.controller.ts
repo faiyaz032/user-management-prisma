@@ -36,6 +36,32 @@ class UserController {
   };
 
   /**
+   * This function handles user login
+   */
+
+  loginUserHandler: RequestHandler = async (req, res, next) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return next(new AppError(400, 'Please attach email and password'));
+    }
+    try {
+      const user = await this.service.loginUser(email, password);
+
+      //save the session on database
+      req.session.user = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      };
+
+      //send response
+      return res.status(200).json({ status: 'success', message: 'user logged in successfully' });
+    } catch (error: any) {
+      next(new AppError(error.statusCode, error.message));
+    }
+  };
+
+  /**
    * This request handler function will handle get all users
    */
 

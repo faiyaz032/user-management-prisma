@@ -6,6 +6,7 @@ const userRouter = express.Router();
 const controller = new UserController();
 
 userRouter.post('/signup', controller.createUserHandler);
+userRouter.post('/login', controller.loginUserHandler);
 
 userRouter.delete('/:id', controller.deleteUserHandler);
 userRouter.get('/:id', controller.getUserByIdHandler);

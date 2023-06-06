@@ -30,6 +30,7 @@ class UserService {
           role: userData.role ? userData.role : 'user',
         },
         select: {
+          id: true,
           name: true,
           email: true,
           role: true,
@@ -49,12 +50,36 @@ class UserService {
   };
 
   /**
+   * This service will login user
+   */
+  loginUser = async (email: string, candidatePassword: string) => {
+    try {
+      const user = (await this.getUserByEmail(email)) as IUser;
+      //check if user exists
+      if (!user) {
+        throw new AppError(401, 'Incorrect email or password 1');
+      }
+
+      //check if the password is valid
+      const isValidPassword = await bcrypt.compare(candidatePassword, user.password);
+      if (!isValidPassword) {
+        throw new AppError(401, 'Incorrect email or password 2');
+      }
+
+      return user;
+    } catch (error: any) {
+      throw new AppError(404, error.message);
+    }
+  };
+
+  /**
    * This user service fetches all users from database
    */
   getAllUsers = async () => {
     try {
       const users = await this.prisma.users.findMany({
         select: {
+          id: true,
           name: true,
           email: true,
           role: true,
@@ -79,9 +104,33 @@ class UserService {
           id: id,
         },
         select: {
+          id: true,
           name: true,
           email: true,
           role: true,
+        },
+      });
+      return user;
+    } catch (error: any) {
+      throw new AppError(500, error.message);
+    }
+  };
+
+  /**
+   * This user service fetches a user by email from database
+   */
+  private getUserByEmail = async (email: string) => {
+    try {
+      const user = await this.prisma.users.findFirst({
+        where: {
+          email,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          password: true,
         },
       });
       return user;
@@ -109,6 +158,7 @@ class UserService {
           email: userData.email ?? userExists.email,
         },
         select: {
+          id: true,
           name: true,
           email: true,
         },

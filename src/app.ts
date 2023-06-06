@@ -1,6 +1,5 @@
 //dependencies
 require('dotenv');
-
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import cors from 'cors';
 import express, { Application } from 'express';
@@ -35,7 +34,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: true,
+      secure: false,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
     },
   })
@@ -45,6 +44,10 @@ declare module 'express-session' {
     user: object;
   }
 }
+
+app.get('/test', (req, res) => {
+  res.json(req.session);
+});
 
 app.use('/api/user', userRouter);
 
