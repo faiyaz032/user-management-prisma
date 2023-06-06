@@ -89,10 +89,6 @@ class UserController {
       return next(new AppError(400, 'Please attach user id in the param'));
     }
 
-    if (!name || !email) {
-      return next(new AppError(400, 'Please attach name,email id in the body'));
-    }
-
     try {
       const updatedUser = await this.service.updateUser(Number(userId), req.body);
       console.log(

@@ -22,7 +22,7 @@ class UserService {
       const hashedPassword = await bcrypt.hash(userData.password, salt);
 
       //create user on database
-      const user = await this.prisma.user.create({
+      const user = await this.prisma.users.create({
         data: {
           name: userData.name,
           email: userData.email,
@@ -53,7 +53,7 @@ class UserService {
    */
   getAllUsers = async () => {
     try {
-      const users = await this.prisma.user.findMany({
+      const users = await this.prisma.users.findMany({
         select: {
           name: true,
           email: true,
@@ -74,7 +74,7 @@ class UserService {
    */
   getUserById = async (id: number) => {
     try {
-      const user = await this.prisma.user.findFirst({
+      const user = await this.prisma.users.findFirst({
         where: {
           id: id,
         },
@@ -100,7 +100,7 @@ class UserService {
         throw new AppError(404, 'No User exists with the id');
       }
 
-      const updatedUser = await this.prisma.user.update({
+      const updatedUser = await this.prisma.users.update({
         where: {
           id: userId,
         },
@@ -131,7 +131,7 @@ class UserService {
       if (!userExists) {
         throw new AppError(404, 'No User Found with this id to delete');
       }
-      return await this.prisma.user.delete({
+      return await this.prisma.users.delete({
         where: {
           id: userId,
         },
